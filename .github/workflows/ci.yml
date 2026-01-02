@@ -60,7 +60,7 @@ jobs:
 
     - name: Database setup
       env:
-        DATABASE_URL: mysql://app:password@127.0.0.1:3306/app_test?serverVersion=mariadb-11.2.2&charset=utf8mb4
+        DATABASE_URL: mysql://root:root@127.0.0.1:3306/app_test?serverVersion=mariadb-11.2.2&charset=utf8mb4
       run: |
         php bin/console doctrine:database:create --env=test --if-not-exists
         php bin/console doctrine:migrations:migrate --env=test --no-interaction
@@ -68,5 +68,5 @@ jobs:
 
     - name: Run Tests
       env:
-        DATABASE_URL: mysql://app:password@127.0.0.1:3306/app_test?serverVersion=mariadb-11.2.2&charset=utf8mb4
+        DATABASE_URL: mysql://root:root@127.0.0.1:3306/app_test?serverVersion=mariadb-11.2.2&charset=utf8mb4
       run: php bin/phpunit
