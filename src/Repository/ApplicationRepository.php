@@ -42,6 +42,28 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
+     * Get applications grouped by day.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getDailyStats(int $daysBack = 30): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE(application_date) as date, COUNT(id) as total
+            FROM application
+            WHERE application_date >= DATE_SUB(CURRENT_DATE, INTERVAL :days DAY)
+            GROUP BY date
+            ORDER BY date ASC
+        ';
+
+        $resultSet = $conn->executeQuery($sql, ['days' => $daysBack]);
+
+        return $resultSet->fetchAllAssociative();
+    }
+
+    /**
      * Get statistics by status.
      *
      * @return array<string|int, array{status: ApplicationStatus, count: int}>

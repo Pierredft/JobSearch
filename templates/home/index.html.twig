@@ -41,7 +41,12 @@
     <!-- Charts -->
     <div class="charts-grid">
         <div class="chart-container">
-            <h3 class="chart-title">📈 Évolution mensuelle</h3>
+            <h3 class="chart-title">📈 Évolution journalière (30 jours)</h3>
+            <canvas id="dailyChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3 class="chart-title">📅 Évolution mensuelle</h3>
             <canvas id="monthlyChart"></canvas>
         </div>
 
@@ -73,16 +78,16 @@
                 <tbody>
                     {% for application in recentApplications %}
                     <tr>
-                        <td>{{ application.applicationDate|date('d/m/Y') }}</td>
-                        <td><strong>{{ application.jobTitle }}</strong></td>
-                        <td>{{ application.company.name }}</td>
-                        <td>{{ application.platform.name }}</td>
-                        <td>
+                        <td data-label="Date">{{ application.applicationDate|date('d/m/Y') }}</td>
+                        <td data-label="Poste"><strong>{{ application.jobTitle }}</strong></td>
+                        <td data-label="Entreprise">{{ application.company.name }}</td>
+                        <td data-label="Plateforme">{{ application.platform.name }}</td>
+                        <td data-label="Statut">
                             <span class="badge badge-{{ application.status.badge }}">
                                 {{ application.status.label }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Actions">
                             <a href="{{ path('app_application_show', {'id': application.id}) }}" class="btn btn-sm btn-secondary">
                                 👁️ Voir
                             </a>
@@ -106,44 +111,64 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Shared Chart Options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    };
+
+    // Daily Chart
+    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+    new Chart(dailyCtx, {
+        type: 'line',
+        data: {
+            labels: {{ dailyLabels|json_encode|raw }},
+            datasets: [{
+                label: 'Candidatures',
+                data: {{ dailyData|json_encode|raw }},
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: '#10B981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: commonOptions
+    });
+
     // Monthly Chart
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     new Chart(monthlyCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: {{ monthlyLabels|json_encode|raw }},
             datasets: [{
                 label: 'Candidatures',
                 data: {{ monthlyData|json_encode|raw }},
-                borderColor: '#4F46E5',
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointBackgroundColor: '#4F46E5',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
+                backgroundColor: '#4F46E5',
+                borderRadius: 4,
+                barPercentage: 0.6
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
-            }
-        }
+        options: commonOptions
     });
 
     // Status Chart

@@ -18,6 +18,7 @@ final class HomeController extends AbstractController
         $totalApplications = $applicationRepository->count([]);
         $statsByStatus = $applicationRepository->getStatsByStatus();
         $monthlyStats = $applicationRepository->getMonthlyStats(6);
+        $dailyStats = $applicationRepository->getDailyStats(30);
         $monthlyStatsByStatus = $applicationRepository->getMonthlyStatsByStatus(6);
         $responseRate = $applicationRepository->getResponseRate();
         $successRate = $applicationRepository->getSuccessRate();
@@ -30,6 +31,28 @@ final class HomeController extends AbstractController
             $date = new \DateTime("{$stat['year']}-{$stat['month']}-01");
             $monthlyLabels[] = $date->format('M Y');
             $monthlyData[] = $stat['total'];
+        }
+
+        // Prepare data for daily chart
+        $dailyLabels = [];
+        $dailyData = [];
+        // Fill in missing days
+        $today = new \DateTime();
+        $period = new \DatePeriod(
+            (new \DateTime())->modify('-29 days'),
+            new \DateInterval('P1D'),
+            $today->modify('+1 day') // Include today
+        );
+
+        $statsByDate = [];
+        foreach ($dailyStats as $stat) {
+            $statsByDate[$stat['date']] = $stat['total'];
+        }
+
+        foreach ($period as $date) {
+            $dateString = $date->format('Y-m-d');
+            $dailyLabels[] = $date->format('d/m');
+            $dailyData[] = $statsByDate[$dateString] ?? 0;
         }
 
         // Prepare data for status chart (monthly breakdown)
@@ -75,6 +98,8 @@ final class HomeController extends AbstractController
             'recentApplications' => $recentApplications,
             'monthlyLabels' => $monthlyLabels,
             'monthlyData' => $monthlyData,
+            'dailyLabels' => $dailyLabels,
+            'dailyData' => $dailyData,
             'statusData' => $statusData,
         ]);
     }
