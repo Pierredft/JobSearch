@@ -19,7 +19,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get runner IP
-        run: curl https://ifconfig.me/ip
+        run: |
+          echo "GitHub Runner IP: $(curl -s https://ifconfig.me/ip)"
+
+      - name: Debug connectivity
+        run: |
+          echo "Checking port 22..."
+          nc -zv -w 5 ${{ secrets.SSH_HOST }} 22 || echo "Port 22 is closed or filtered"
+          echo "Checking port 2222..."
+          nc -zv -w 5 ${{ secrets.SSH_HOST }} 2222 || echo "Port 2222 is closed or filtered"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
