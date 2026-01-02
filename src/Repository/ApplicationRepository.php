@@ -21,6 +21,8 @@ class ApplicationRepository extends ServiceEntityRepository
 
     /**
      * Get applications grouped by month.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public function getMonthlyStats(int $monthsBack = 6): array
     {
@@ -64,6 +66,8 @@ class ApplicationRepository extends ServiceEntityRepository
 
     /**
      * Get monthly stats by status.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public function getMonthlyStatsByStatus(int $monthsBack = 6): array
     {
