@@ -15,56 +15,15 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Whitelist IP on O2switch
+      - name: Trigger Deployment Webhook
         run: |
-          RUNNER_IP=$(curl -s https://ifconfig.me/ip)
-          echo "Whitelisting IP: $RUNNER_IP"
+          echo "Triggering deployment via Webhook..."
+          response=$(curl -s -w "%{http_code}" -o response.txt "https://${{ secrets.SSH_HOST }}/deploy.php?token=${{ secrets.DEPLOY_TOKEN }}")
           
-          # 1. Try generic cPanel API with Insecure SSL (Basic Auth) - VERBOSE
-          echo "Attempting generic API with Basic Auth..."
-          curl -k -v -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
-            "https://${{ secrets.SSH_HOST }}:2083/execute/Msg/send_message" || true
+          echo "Response Code: $response"
+          cat response.txt
           
-          # 2. Try O2switch specific whitelist endpoint with Insecure SSL (Basic Auth) - VERBOSE
-          echo "Attempting O2switch endpoint with Basic Auth..."
-          curl -k -v -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
-            "https://${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
-          
-          # Wait a few seconds for firewall propagation
-          sleep 10
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd ${{ secrets.DEPLOY_PATH }}
-            
-            # Maintenance mode (optional, only if you have a maintenance page)
-            # touch public/maintenance.php
-            
-            # Update code
-            git pull origin main
-            
-            # Install dependencies
-            composer install --no-dev --optimize-autoloader --no-interaction
-            
-            # Database migrations
-            php bin/console doctrine:migrations:migrate --no-interaction --env=prod
-            
-            # Clear and warm up cache
-            php bin/console cache:clear --env=prod
-            
-            # Assets
-            php bin/console asset-mapper:compile --env=prod
-            
-            # Disable maintenance mode
-            # rm public/maintenance.php
-            
-            echo "Deployment successful!"
+          if [ "$response" -ne 200 ]; then
+            echo "Deployment Failed!"
+            exit 1
+          fi

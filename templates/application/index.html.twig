@@ -28,22 +28,22 @@
             <tbody>
                 {% for application in applications %}
                 <tr>
-                    <td>{{ application.applicationDate|date('d/m/Y') }}</td>
-                    <td>
+                    <td data-label="Date">{{ application.applicationDate|date('d/m/Y') }}</td>
+                    <td data-label="Poste">
                         <strong>{{ application.jobTitle }}</strong>
                         {% if application.salary %}
                             <br><small class="text-secondary">{{ application.salary }}</small>
                         {% endif %}
                     </td>
-                    <td>{{ application.company.name }}</td>
-                    <td>{{ application.platform.name }}</td>
-                    <td>{{ application.location ?? '-' }}</td>
-                    <td>
+                    <td data-label="Entreprise">{{ application.company.name }}</td>
+                    <td data-label="Plateforme">{{ application.platform.name }}</td>
+                    <td data-label="Localisation">{{ application.location ?? '-' }}</td>
+                    <td data-label="Statut">
                         <span class="badge badge-{{ application.status.badge }}">
                             {{ application.status.label }}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                         <div class="flex gap-sm">
                             <a href="{{ path('app_application_show', {'id': application.id}) }}" class="btn btn-sm btn-secondary">
                                 👁️
