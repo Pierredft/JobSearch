@@ -43,6 +43,8 @@ class ApplicationRepository extends ServiceEntityRepository
 
     /**
      * Get statistics by status.
+     *
+     * @return array<string|int, array{status: ApplicationStatus, count: int}>
      */
     public function getStatsByStatus(): array
     {
@@ -94,6 +96,8 @@ class ApplicationRepository extends ServiceEntityRepository
 
     /**
      * Get recent applications.
+     *
+     * @return Application[]
      */
     public function findRecent(int $limit = 10): array
     {
