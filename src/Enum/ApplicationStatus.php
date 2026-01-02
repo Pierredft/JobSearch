@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum ApplicationStatus: string
@@ -11,7 +13,7 @@ enum ApplicationStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::SENT => 'Candidature envoyée',
             self::NO_RESPONSE => 'Sans retour',
             self::NEGATIVE_RESPONSE => 'Retour négatif',
@@ -21,7 +23,7 @@ enum ApplicationStatus: string
 
     public function badge(): string
     {
-        return match($this) {
+        return match ($this) {
             self::SENT => 'info',
             self::NO_RESPONSE => 'warning',
             self::NEGATIVE_RESPONSE => 'danger',

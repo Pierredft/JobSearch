@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Application;
@@ -16,6 +18,9 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<Application>
+ */
 class ApplicationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -44,7 +49,7 @@ class ApplicationType extends AbstractType
             ])
             ->add('status', EnumType::class, [
                 'class' => ApplicationStatus::class,
-                'choice_label' => fn($choice) => $choice->label(),
+                'choice_label' => fn ($choice) => $choice->label(),
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('applicationDate', DateType::class, [

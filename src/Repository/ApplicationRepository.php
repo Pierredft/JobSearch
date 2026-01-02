@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Application;
@@ -18,13 +20,15 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get applications grouped by month
+     * Get applications grouped by month.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public function getMonthlyStats(int $monthsBack = 6): array
     {
         $startDate = new \DateTime("-{$monthsBack} months");
         $startDate->modify('first day of this month');
-        
+
         $qb = $this->createQueryBuilder('a')
             ->select('YEAR(a.applicationDate) as year, MONTH(a.applicationDate) as month, COUNT(a.id) as total')
             ->where('a.applicationDate >= :startDate')
@@ -36,7 +40,9 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get statistics by status
+     * Get statistics by status.
+     *
+     * @return array<string, array{status: ApplicationStatus, count: int}>
      */
     public function getStatsByStatus(): array
     {
@@ -45,7 +51,7 @@ class ApplicationRepository extends ServiceEntityRepository
             ->groupBy('a.status');
 
         $results = $qb->getQuery()->getResult();
-        
+
         $stats = [];
         foreach ($results as $result) {
             $stats[$result['status']->value] = [
@@ -58,13 +64,15 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get monthly stats by status
+     * Get monthly stats by status.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public function getMonthlyStatsByStatus(int $monthsBack = 6): array
     {
         $startDate = new \DateTime("-{$monthsBack} months");
         $startDate->modify('first day of this month');
-        
+
         $qb = $this->createQueryBuilder('a')
             ->select('YEAR(a.applicationDate) as year, MONTH(a.applicationDate) as month, a.status, COUNT(a.id) as count')
             ->where('a.applicationDate >= :startDate')
@@ -76,7 +84,9 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get recent applications
+     * Get recent applications.
+     *
+     * @return Application[]
      */
     public function findRecent(int $limit = 10): array
     {
@@ -88,12 +98,12 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate response rate
+     * Calculate response rate.
      */
     public function getResponseRate(): float
     {
         $total = $this->count([]);
-        if ($total === 0) {
+        if (0 === $total) {
             return 0;
         }
 
@@ -109,12 +119,12 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate success rate
+     * Calculate success rate.
      */
     public function getSuccessRate(): float
     {
         $total = $this->count([]);
-        if ($total === 0) {
+        if (0 === $total) {
             return 0;
         }
 

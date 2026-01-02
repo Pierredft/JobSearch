@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\ApplicationStatus;
@@ -75,6 +77,7 @@ class Application
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+
         return $this;
     }
 
@@ -86,6 +89,7 @@ class Application
     public function setPlatform(?Platform $platform): static
     {
         $this->platform = $platform;
+
         return $this;
     }
 
@@ -97,6 +101,7 @@ class Application
     public function setJobTitle(string $jobTitle): static
     {
         $this->jobTitle = $jobTitle;
+
         return $this;
     }
 
@@ -108,6 +113,7 @@ class Application
     public function setJobDescription(?string $jobDescription): static
     {
         $this->jobDescription = $jobDescription;
+
         return $this;
     }
 
@@ -119,6 +125,7 @@ class Application
     public function setStatus(ApplicationStatus $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -130,6 +137,7 @@ class Application
     public function setApplicationDate(\DateTimeInterface $applicationDate): static
     {
         $this->applicationDate = $applicationDate;
+
         return $this;
     }
 
@@ -141,6 +149,7 @@ class Application
     public function setResponseDate(?\DateTimeInterface $responseDate): static
     {
         $this->responseDate = $responseDate;
+
         return $this;
     }
 
@@ -152,6 +161,7 @@ class Application
     public function setNotes(?string $notes): static
     {
         $this->notes = $notes;
+
         return $this;
     }
 
@@ -163,6 +173,7 @@ class Application
     public function setJobUrl(?string $jobUrl): static
     {
         $this->jobUrl = $jobUrl;
+
         return $this;
     }
 
@@ -174,6 +185,7 @@ class Application
     public function setSalary(?string $salary): static
     {
         $this->salary = $salary;
+
         return $this;
     }
 
@@ -185,6 +197,7 @@ class Application
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+
         return $this;
     }
 }

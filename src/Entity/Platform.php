@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PlatformRepository;
@@ -51,6 +53,7 @@ class Platform
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -62,6 +65,7 @@ class Platform
     public function setUrl(?string $url): static
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -73,6 +77,7 @@ class Platform
     public function setLogoUrl(?string $logoUrl): static
     {
         $this->logoUrl = $logoUrl;
+
         return $this;
     }
 
@@ -90,6 +95,7 @@ class Platform
             $this->applications->add($application);
             $application->setPlatform($this);
         }
+
         return $this;
     }
 
@@ -100,6 +106,7 @@ class Platform
                 $application->setPlatform(null);
             }
         }
+
         return $this;
     }
 

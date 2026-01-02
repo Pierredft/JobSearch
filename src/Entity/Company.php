@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
@@ -54,6 +56,7 @@ class Company
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -65,6 +68,7 @@ class Company
     public function setWebsite(?string $website): static
     {
         $this->website = $website;
+
         return $this;
     }
 
@@ -76,6 +80,7 @@ class Company
     public function setIndustry(?string $industry): static
     {
         $this->industry = $industry;
+
         return $this;
     }
 
@@ -87,6 +92,7 @@ class Company
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+
         return $this;
     }
 
@@ -104,6 +110,7 @@ class Company
             $this->applications->add($application);
             $application->setCompany($this);
         }
+
         return $this;
     }
 
@@ -114,6 +121,7 @@ class Company
                 $application->setCompany(null);
             }
         }
+
         return $this;
     }
 
