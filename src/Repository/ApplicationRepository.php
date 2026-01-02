@@ -20,29 +20,26 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get applications grouped by month.
-     *
-     * @return array<int, array<string, mixed>>
+     * Get applications grouped by month
      */
     public function getMonthlyStats(int $monthsBack = 6): array
     {
-        $startDate = new \DateTime("-{$monthsBack} months");
-        $startDate->modify('first day of this month');
+        $conn = $this->getEntityManager()->getConnection();
+        
+        $sql = '
+            SELECT YEAR(application_date) as year, MONTH(application_date) as month, COUNT(id) as total
+            FROM application
+            WHERE application_date >= DATE_SUB(CURRENT_DATE, INTERVAL :months MONTH)
+            GROUP BY year, month
+            ORDER BY year ASC, month ASC
+        ';
 
-        $qb = $this->createQueryBuilder('a')
-            ->select('YEAR(a.applicationDate) as year, MONTH(a.applicationDate) as month, COUNT(a.id) as total')
-            ->where('a.applicationDate >= :startDate')
-            ->setParameter('startDate', $startDate)
-            ->groupBy('year, month')
-            ->orderBy('year, month', 'ASC');
-
-        return $qb->getQuery()->getResult();
+        $resultSet = $conn->executeQuery($sql, ['months' => $monthsBack]);
+        return $resultSet->fetchAllAssociative();
     }
 
     /**
-     * Get statistics by status.
-     *
-     * @return array<string, array{status: ApplicationStatus, count: int}>
+     * Get statistics by status
      */
     public function getStatsByStatus(): array
     {
@@ -51,12 +48,13 @@ class ApplicationRepository extends ServiceEntityRepository
             ->groupBy('a.status');
 
         $results = $qb->getQuery()->getResult();
-
+        
         $stats = [];
         foreach ($results as $result) {
-            $stats[$result['status']->value] = [
-                'status' => $result['status'],
-                'count' => $result['count'],
+            $status = $result['status'];
+            $stats[$status->value] = [
+                'status' => $status,
+                'count' => (int) $result['count'],
             ];
         }
 
@@ -64,29 +62,33 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get monthly stats by status.
-     *
-     * @return array<int, array<string, mixed>>
+     * Get monthly stats by status
      */
     public function getMonthlyStatsByStatus(int $monthsBack = 6): array
     {
-        $startDate = new \DateTime("-{$monthsBack} months");
-        $startDate->modify('first day of this month');
+        $conn = $this->getEntityManager()->getConnection();
+        
+        $sql = '
+            SELECT YEAR(application_date) as year, MONTH(application_date) as month, status, COUNT(id) as count
+            FROM application
+            WHERE application_date >= DATE_SUB(CURRENT_DATE, INTERVAL :months MONTH)
+            GROUP BY year, month, status
+            ORDER BY year ASC, month ASC
+        ';
 
-        $qb = $this->createQueryBuilder('a')
-            ->select('YEAR(a.applicationDate) as year, MONTH(a.applicationDate) as month, a.status, COUNT(a.id) as count')
-            ->where('a.applicationDate >= :startDate')
-            ->setParameter('startDate', $startDate)
-            ->groupBy('year, month, a.status')
-            ->orderBy('year, month', 'ASC');
+        $resultSet = $conn->executeQuery($sql, ['months' => $monthsBack]);
+        $results = $resultSet->fetchAllAssociative();
 
-        return $qb->getQuery()->getResult();
+        // On remet les statuts dans leur format Enum pour le controlleur
+        foreach ($results as &$result) {
+            $result['status'] = ApplicationStatus::from($result['status']);
+        }
+
+        return $results;
     }
 
     /**
-     * Get recent applications.
-     *
-     * @return Application[]
+     * Get recent applications
      */
     public function findRecent(int $limit = 10): array
     {
@@ -98,38 +100,38 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate response rate.
+     * Calculate response rate
      */
     public function getResponseRate(): float
     {
         $total = $this->count([]);
-        if (0 === $total) {
+        if ($total === 0) {
             return 0;
         }
 
-        $withResponse = $this->createQueryBuilder('a')
-            ->select('COUNT(a.id)')
-            ->where('a.status != :sent AND a.status != :noResponse')
-            ->setParameter('sent', ApplicationStatus::SENT)
-            ->setParameter('noResponse', ApplicationStatus::NO_RESPONSE)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT COUNT(id) FROM application WHERE status NOT IN (:sent, :no_response)';
+        
+        $count = $conn->fetchOne($sql, [
+            'sent' => ApplicationStatus::SENT->value,
+            'no_response' => ApplicationStatus::NO_RESPONSE->value
+        ]);
 
-        return ($withResponse / $total) * 100;
+        return ($count / $total) * 100;
     }
 
     /**
-     * Calculate success rate.
+     * Calculate success rate
      */
     public function getSuccessRate(): float
     {
         $total = $this->count([]);
-        if (0 === $total) {
+        if ($total === 0) {
             return 0;
         }
 
-        $positive = $this->count(['status' => ApplicationStatus::POSITIVE_RESPONSE]);
+        $positiveCount = $this->count(['status' => ApplicationStatus::POSITIVE_RESPONSE]);
 
-        return ($positive / $total) * 100;
+        return ($positiveCount / $total) * 100;
     }
 }
