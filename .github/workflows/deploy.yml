@@ -23,13 +23,14 @@ jobs:
           RUNNER_IP=$(curl -s https://ifconfig.me/ip)
           echo "Whitelisting IP: $RUNNER_IP"
           
-          # 1. Try generic cPanel API with insecure SSL (IP usage often invalidates SSL cert)
-          curl -k -s -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
-            "https://${{ secrets.SSH_HOST }}:2083/execute/Msg/send_message" \
-            > /dev/null || true
+          # 1. Try generic cPanel API with insecure SSL - VERBOSE
+          echo "Attempting generic API..."
+          curl -k -v -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
+            "https://${{ secrets.SSH_HOST }}:2083/execute/Msg/send_message" || true
           
-          # 2. Try O2switch specific whitelist endpoint with insecure SSL
-          curl -k -s "https://${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}@${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
+          # 2. Try O2switch specific whitelist endpoint with insecure SSL - VERBOSE
+          echo "Attempting O2switch endpoint..."
+          curl -k -v "https://${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}@${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
           
           # Wait a few seconds for firewall propagation
           sleep 10
