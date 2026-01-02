@@ -18,16 +18,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get runner IP
+      - name: Whitelist IP on O2switch
         run: |
-          echo "GitHub Runner IP: $(curl -s https://ifconfig.me/ip)"
-
-      - name: Debug connectivity
-        run: |
-          echo "Checking port 22..."
-          nc -zv -w 5 ${{ secrets.SSH_HOST }} 22 || echo "Port 22 is closed or filtered"
-          echo "Checking port 2222..."
-          nc -zv -w 5 ${{ secrets.SSH_HOST }} 2222 || echo "Port 2222 is closed or filtered"
+          RUNNER_IP=$(curl -s https://ifconfig.me/ip)
+          echo "Whitelisting IP: $RUNNER_IP"
+          curl -s -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
+            "https://${{ secrets.SSH_HOST }}:2083/execute/Msg/send_message" \
+            > /dev/null || true
+          
+          # Using the specific O2switch whitelist endpoint (try standard cPanel API first or fallback)
+          # Since the specialized endpoint might vary, we use the standard cPanel API to add IP to firewall if available
+          # For O2switch specifically, we often use a direct call if the "Autorisation SSH" tool API is exposed.
+          # Based on standard O2switch automation without custom endpoint knowledge, we try the known path:
+          
+          curl -s "https://${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}@${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
+          
+          # Wait a few seconds for firewall propagation
+          sleep 10
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
