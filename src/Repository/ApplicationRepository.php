@@ -20,12 +20,12 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get applications grouped by month
+     * Get applications grouped by month.
      */
     public function getMonthlyStats(int $monthsBack = 6): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        
+
         $sql = '
             SELECT YEAR(application_date) as year, MONTH(application_date) as month, COUNT(id) as total
             FROM application
@@ -35,11 +35,12 @@ class ApplicationRepository extends ServiceEntityRepository
         ';
 
         $resultSet = $conn->executeQuery($sql, ['months' => $monthsBack]);
+
         return $resultSet->fetchAllAssociative();
     }
 
     /**
-     * Get statistics by status
+     * Get statistics by status.
      */
     public function getStatsByStatus(): array
     {
@@ -48,7 +49,7 @@ class ApplicationRepository extends ServiceEntityRepository
             ->groupBy('a.status');
 
         $results = $qb->getQuery()->getResult();
-        
+
         $stats = [];
         foreach ($results as $result) {
             $status = $result['status'];
@@ -62,12 +63,12 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get monthly stats by status
+     * Get monthly stats by status.
      */
     public function getMonthlyStatsByStatus(int $monthsBack = 6): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        
+
         $sql = '
             SELECT YEAR(application_date) as year, MONTH(application_date) as month, status, COUNT(id) as count
             FROM application
@@ -88,7 +89,7 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get recent applications
+     * Get recent applications.
      */
     public function findRecent(int $limit = 10): array
     {
@@ -100,33 +101,32 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate response rate
+     * Calculate response rate.
      */
     public function getResponseRate(): float
     {
         $total = $this->count([]);
-        if ($total === 0) {
+        if (0 === $total) {
             return 0;
         }
 
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT COUNT(id) FROM application WHERE status NOT IN (:sent, :no_response)';
-        
         $count = $conn->fetchOne($sql, [
             'sent' => ApplicationStatus::SENT->value,
-            'no_response' => ApplicationStatus::NO_RESPONSE->value
+            'no_response' => ApplicationStatus::NO_RESPONSE->value,
         ]);
 
         return ($count / $total) * 100;
     }
 
     /**
-     * Calculate success rate
+     * Calculate success rate.
      */
     public function getSuccessRate(): float
     {
         $total = $this->count([]);
-        if ($total === 0) {
+        if (0 === $total) {
             return 0;
         }
 
