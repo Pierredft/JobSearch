@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Candidature - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <h1 class="page-title">✏️ Modifier la candidature</h1>
+
+    <div class="card" style="max-width: 800px;">
+        {{ form_start(form) }}
+        
+        <div class="form-group">
+            {{ form_label(form.company) }}
+            {{ form_widget(form.company) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.platform) }}
+            {{ form_widget(form.platform) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.jobTitle) }}
+            {{ form_widget(form.jobTitle) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.jobDescription) }}
+            {{ form_widget(form.jobDescription) }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                {{ form_label(form.status) }}
+                {{ form_widget(form.status) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.applicationDate) }}
+                {{ form_widget(form.applicationDate) }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.responseDate) }}
+            {{ form_widget(form.responseDate) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.jobUrl) }}
+            {{ form_widget(form.jobUrl) }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                {{ form_label(form.salary) }}
+                {{ form_widget(form.salary) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.location) }}
+                {{ form_widget(form.location) }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.notes) }}
+            {{ form_widget(form.notes) }}
+        </div>
+
+        <div class="flex gap-md" style="margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+            <a href="{{ path('app_application_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

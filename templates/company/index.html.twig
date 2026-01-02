@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Entreprises - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">🏢 Entreprises</h1>
+        <a href="{{ path('app_company_new') }}" class="btn btn-primary">➕ Nouvelle entreprise</a>
+    </div>
+
+    {% if companies|length > 0 %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Secteur</th>
+                    <th>Localisation</th>
+                    <th>Site web</th>
+                    <th>Candidatures</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                <tr>
+                    <td><strong>{{ company.name }}</strong></td>
+                    <td>{{ company.industry ?? '-' }}</td>
+                    <td>{{ company.location ?? '-' }}</td>
+                    <td>
+                        {% if company.website %}
+                            <a href="{{ company.website }}" target="_blank">🔗</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ company.applications|length }}</td>
+                    <td>
+                        <div class="flex gap-sm">
+                            <a href="{{ path('app_company_edit', {'id': company.id}) }}" class="btn btn-sm btn-primary">✏️</a>
+                            <form method="post" action="{{ path('app_company_delete', {'id': company.id}) }}" style="display: inline;" onsubmit="return confirm('Supprimer cette entreprise ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ company.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card text-center">
+        <h3>Aucune entreprise enregistrée</h3>
+        <p class="text-secondary mb-lg">Ajoutez votre première entreprise !</p>
+        <a href="{{ path('app_company_new') }}" class="btn btn-primary">➕ Ajouter une entreprise</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plateformes - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">🌐 Plateformes</h1>
+        <a href="{{ path('app_platform_new') }}" class="btn btn-primary">➕ Nouvelle plateforme</a>
+    </div>
+
+    {% if platforms|length > 0 %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>URL</th>
+                    <th>Candidatures</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for platform in platforms %}
+                <tr>
+                    <td><strong>{{ platform.name }}</strong></td>
+                    <td>
+                        {% if platform.url %}
+                            <a href="{{ platform.url }}" target="_blank">🔗 {{ platform.url }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ platform.applications|length }}</td>
+                    <td>
+                        <div class="flex gap-sm">
+                            <a href="{{ path('app_platform_edit', {'id': platform.id}) }}" class="btn btn-sm btn-primary">✏️</a>
+                            <form method="post" action="{{ path('app_platform_delete', {'id': platform.id}) }}" style="display: inline;" onsubmit="return confirm('Supprimer cette plateforme ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ platform.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card text-center">
+        <h3>Aucune plateforme enregistrée</h3>
+        <p class="text-secondary mb-lg">Ajoutez votre première plateforme de recherche !</p>
+        <a href="{{ path('app_platform_new') }}" class="btn btn-primary">➕ Ajouter une plateforme</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

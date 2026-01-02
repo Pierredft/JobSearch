@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">📊 Dashboard</h1>
+        <a href="{{ path('app_application_new') }}" class="btn btn-primary">
+            ➕ Nouvelle candidature
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card primary">
+            <div class="stat-label">Total Candidatures</div>
+            <div class="stat-value">{{ totalApplications }}</div>
+            <div class="stat-description">Candidatures enregistrées</div>
+        </div>
+
+        <div class="stat-card success">
+            <div class="stat-label">Taux de réponse</div>
+            <div class="stat-value">{{ responseRate }}%</div>
+            <div class="stat-description">Des candidatures ont reçu une réponse</div>
+        </div>
+
+        <div class="stat-card warning">
+            <div class="stat-label">Taux de succès</div>
+            <div class="stat-value">{{ successRate }}%</div>
+            <div class="stat-description">Retours positifs</div>
+        </div>
+
+        <div class="stat-card info">
+            <div class="stat-label">Sans retour</div>
+            <div class="stat-value">{{ statsByStatus['no_response'].count ?? 0 }}</div>
+            <div class="stat-description">En attente de réponse</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <h3 class="chart-title">📈 Évolution mensuelle</h3>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">📊 Répartition par statut</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Applications -->
+    {% if recentApplications|length > 0 %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📝 Candidatures récentes</h2>
+            <a href="{{ path('app_application_index') }}" class="btn btn-secondary btn-sm">Voir tout</a>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Poste</th>
+                        <th>Entreprise</th>
+                        <th>Plateforme</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in recentApplications %}
+                    <tr>
+                        <td>{{ application.applicationDate|date('d/m/Y') }}</td>
+                        <td><strong>{{ application.jobTitle }}</strong></td>
+                        <td>{{ application.company.name }}</td>
+                        <td>{{ application.platform.name }}</td>
+                        <td>
+                            <span class="badge badge-{{ application.status.badge }}">
+                                {{ application.status.label }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_application_show', {'id': application.id}) }}" class="btn btn-sm btn-secondary">
+                                👁️ Voir
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card text-center">
+        <h3>Aucune candidature pour le moment</h3>
+        <p class="text-secondary mb-lg">Commencez par ajouter votre première candidature !</p>
+        <a href="{{ path('app_application_new') }}" class="btn btn-primary">
+            ➕ Ajouter une candidature
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: {{ monthlyLabels|json_encode|raw }},
+            datasets: [{
+                label: 'Candidatures',
+                data: {{ monthlyData|json_encode|raw }},
+                borderColor: '#4F46E5',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: '#4F46E5',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Envoyées', 'Sans retour', 'Retour négatif', 'Retour positif'],
+            datasets: [{
+                data: [
+                    {{ statsByStatus['sent'].count ?? 0 }},
+                    {{ statsByStatus['no_response'].count ?? 0 }},
+                    {{ statsByStatus['negative_response'].count ?? 0 }},
+                    {{ statsByStatus['positive_response'].count ?? 0 }}
+                ],
+                backgroundColor: [
+                    '#3B82F6',
+                    '#F59E0B',
+                    '#EF4444',
+                    '#10B981'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

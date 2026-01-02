@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ application.jobTitle }} - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">{{ application.jobTitle }}</h1>
+        <div class="flex gap-sm">
+            <a href="{{ path('app_application_edit', {'id': application.id}) }}" class="btn btn-primary">
+                ✏️ Modifier
+            </a>
+            <a href="{{ path('app_application_index') }}" class="btn btn-secondary">
+                ← Retour
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        <!-- Main Info -->
+        <div>
+            <div class="card">
+                <h3 class="section-title">Informations générales</h3>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong>Entreprise :</strong> {{ application.company.name }}
+                        {% if application.company.website %}
+                            <br><a href="{{ application.company.website }}" target="_blank" class="text-primary">🔗 Site web</a>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <strong>Plateforme :</strong> {{ application.platform.name }}
+                    </div>
+
+                    <div>
+                        <strong>Localisation :</strong> {{ application.location ?? 'Non spécifiée' }}
+                    </div>
+
+                    {% if application.salary %}
+                    <div>
+                        <strong>Salaire :</strong> {{ application.salary }}
+                    </div>
+                    {% endif %}
+
+                    {% if application.jobUrl %}
+                    <div>
+                        <strong>Lien de l'offre :</strong><br>
+                        <a href="{{ application.jobUrl }}" target="_blank" class="text-primary">🔗 Voir l'offre</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if application.jobDescription %}
+            <div class="card">
+                <h3 class="section-title">Description du poste</h3>
+                <p style="white-space: pre-wrap; color: var(--text-secondary);">{{ application.jobDescription }}</p>
+            </div>
+            {% endif %}
+
+            {% if application.notes %}
+            <div class="card">
+                <h3 class="section-title">Notes personnelles</h3>
+                <p style="white-space: pre-wrap; color: var(--text-secondary);">{{ application.notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <div class="card">
+                <h3 class="section-title">Statut</h3>
+                <div class="text-center mb-lg">
+                    <span class="badge badge-{{ application.status.badge }}" style="font-size: 1rem; padding: 0.5rem 1.5rem;">
+                        {{ application.status.label }}
+                    </span>
+                </div>
+
+                <div style="display: grid; gap: 1rem; font-size: 0.875rem;">
+                    <div>
+                        <strong>Date de candidature :</strong><br>
+                        {{ application.applicationDate|date('d/m/Y') }}
+                    </div>
+
+                    {% if application.responseDate %}
+                    <div>
+                        <strong>Date de réponse :</strong><br>
+                        {{ application.responseDate|date('d/m/Y') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Actions</h3>
+                <form method="post" action="{{ path('app_application_delete', {'id': application.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ application.id) }}">
+                    <button type="submit" class="btn btn-danger" style="width: 100%;">
+                        🗑️ Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

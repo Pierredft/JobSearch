@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Plateforme - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <h1 class="page-title">✏️ Modifier la plateforme</h1>
+
+    <div class="card" style="max-width: 600px;">
+        {{ form_start(form) }}
+        
+        <div class="form-group">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.url) }}
+            {{ form_widget(form.url) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.logoUrl) }}
+            {{ form_widget(form.logoUrl) }}
+        </div>
+
+        <div class="flex gap-md" style="margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+            <a href="{{ path('app_platform_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -3,8 +3,12 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432"
+      - "3306:3306"
 ###< doctrine/doctrine-bundle ###
+
+  phpmyadmin:
+    ports:
+      - "8080:80"
 
 ###> symfony/mailer ###
   mailer:
