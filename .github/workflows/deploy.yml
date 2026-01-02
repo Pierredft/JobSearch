@@ -22,16 +22,14 @@ jobs:
         run: |
           RUNNER_IP=$(curl -s https://ifconfig.me/ip)
           echo "Whitelisting IP: $RUNNER_IP"
-          curl -s -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
+          
+          # 1. Try generic cPanel API with insecure SSL (IP usage often invalidates SSL cert)
+          curl -k -s -u "${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}" \
             "https://${{ secrets.SSH_HOST }}:2083/execute/Msg/send_message" \
             > /dev/null || true
           
-          # Using the specific O2switch whitelist endpoint (try standard cPanel API first or fallback)
-          # Since the specialized endpoint might vary, we use the standard cPanel API to add IP to firewall if available
-          # For O2switch specifically, we often use a direct call if the "Autorisation SSH" tool API is exposed.
-          # Based on standard O2switch automation without custom endpoint knowledge, we try the known path:
-          
-          curl -s "https://${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}@${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
+          # 2. Try O2switch specific whitelist endpoint with insecure SSL
+          curl -k -s "https://${{ secrets.CPANEL_USER }}:${{ secrets.CPANEL_TOKEN }}@${{ secrets.SSH_HOST }}:2083/frontend/o2switch/o2switch-ssh-whitelist/index.live.php?ip=${RUNNER_IP}&note=GitHubAction"
           
           # Wait a few seconds for firewall propagation
           sleep 10
