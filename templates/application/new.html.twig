@@ -12,6 +12,7 @@
         <div class="form-group">
             {{ form_label(form.company) }}
             {{ form_widget(form.company) }}
+            {{ form_errors(form.company) }}
             <small class="text-secondary">
                 <a href="{{ path('app_company_new') }}" target="_blank">➕ Créer une nouvelle entreprise</a>
             </small>
@@ -20,6 +21,7 @@
         <div class="form-group">
             {{ form_label(form.platform) }}
             {{ form_widget(form.platform) }}
+            {{ form_errors(form.platform) }}
             <small class="text-secondary">
                 <a href="{{ path('app_platform_new') }}" target="_blank">➕ Créer une nouvelle plateforme</a>
             </small>
@@ -28,6 +30,16 @@
         <div class="form-group">
             {{ form_label(form.jobTitle) }}
             {{ form_widget(form.jobTitle) }}
+            {{ form_errors(form.jobTitle) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.sector) }}
+            {{ form_widget(form.sector) }}
+            {{ form_errors(form.sector) }}
+            <small class="text-secondary">
+                <a href="{{ path('app_sector_new') }}" target="_blank">➕ Créer un nouveau secteur</a>
+            </small>
         </div>
 
         <div class="form-group">

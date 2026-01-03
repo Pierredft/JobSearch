@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau secteur - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">➕ Nouveau secteur</h1>
+        <a href="{{ path('app_sector_index') }}" class="btn btn-secondary">
+            ← Retour
+        </a>
+    </div>
+
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        {{ include('sector/_form.html.twig') }}
+    </div>
+</div>
+{% endblock %}

@@ -164,4 +164,34 @@ class ApplicationRepository extends ServiceEntityRepository
 
         return ($positiveCount / $total) * 100;
     }
+
+    /**
+     * Get statistics by sector.
+     *
+     * @return array<string, int>
+     */
+    public function getStatsBySector(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        
+        $sql = '
+            SELECT 
+                COALESCE(s.name, "Non spécifié") as sector_name, 
+                COUNT(a.id) as count
+            FROM application a
+            LEFT JOIN sector s ON a.sector_id = s.id
+            GROUP BY s.id, s.name
+            ORDER BY count DESC
+        ';
+
+        $resultSet = $conn->executeQuery($sql);
+        $results = $resultSet->fetchAllAssociative();
+
+        $stats = [];
+        foreach ($results as $result) {
+            $stats[$result['sector_name']] = (int) $result['count'];
+        }
+
+        return $stats;
+    }
 }

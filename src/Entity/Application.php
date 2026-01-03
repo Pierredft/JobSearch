@@ -58,6 +58,9 @@ class Application
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $location = null;
 
+    #[ORM\ManyToOne(inversedBy: 'applications')]
+    private ?Sector $sector = null;
+
     public function __construct()
     {
         $this->status = ApplicationStatus::SENT;
@@ -197,6 +200,18 @@ class Application
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getSector(): ?Sector
+    {
+        return $this->sector;
+    }
+
+    public function setSector(?Sector $sector): static
+    {
+        $this->sector = $sector;
 
         return $this;
     }

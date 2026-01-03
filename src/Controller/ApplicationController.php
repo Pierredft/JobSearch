@@ -6,7 +6,10 @@ namespace App\Controller;
 
 use App\Entity\Application;
 use App\Form\ApplicationType;
+use App\Entity\Sector;
+use App\Enum\ApplicationStatus;
 use App\Repository\ApplicationRepository;
+use App\Repository\SectorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +20,25 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ApplicationController extends AbstractController
 {
     #[Route('/', name: 'app_application_index', methods: ['GET'])]
-    public function index(ApplicationRepository $applicationRepository): Response
+    public function index(Request $request, ApplicationRepository $applicationRepository, SectorRepository $sectorRepository): Response
     {
+        $sectorId = $request->query->get('sector');
+        $status = $request->query->get('status');
+
+        $criteria = [];
+        if ($sectorId) {
+            $criteria['sector'] = $sectorId;
+        }
+        if ($status) {
+            $criteria['status'] = ApplicationStatus::tryFrom($status);
+        }
+
         return $this->render('application/index.html.twig', [
-            'applications' => $applicationRepository->findBy([], ['applicationDate' => 'DESC']),
+            'applications' => $applicationRepository->findBy($criteria, ['applicationDate' => 'DESC']),
+            'sectors' => $sectorRepository->findAll(),
+            'currentSector' => $sectorId,
+            'currentStatus' => $status,
+            'statuses' => ApplicationStatus::cases(),
         ]);
     }
 

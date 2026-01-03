@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Secteur - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">secteur</h1>
+        <div class="flex gap-sm">
+            <a href="{{ path('app_sector_edit', {'id': sector.id}) }}" class="btn btn-primary">
+                ✏️ Modifier
+            </a>
+            <a href="{{ path('app_sector_index') }}" class="btn btn-secondary">
+                ← Retour
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-xl">
+        <h3 class="section-title">Informations</h3>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ sector.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ sector.name }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    {% if sector.applications|length > 0 %}
+    <div class="card">
+        <h3 class="section-title">Candidatures liées ({{ sector.applications|length }})</h3>
+        <ul>
+            {% for app in sector.applications %}
+                <li>
+                    <a href="{{ path('app_application_show', {'id': app.id}) }}" class="text-primary">
+                        {{ app.jobTitle }} - {{ app.company.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

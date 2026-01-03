@@ -23,6 +23,7 @@ final class HomeController extends AbstractController
         $responseRate = $applicationRepository->getResponseRate();
         $successRate = $applicationRepository->getSuccessRate();
         $recentApplications = $applicationRepository->findRecent(5);
+        $statsBySector = $applicationRepository->getStatsBySector();
 
         // Prepare data for monthly chart
         $monthlyLabels = [];
@@ -101,6 +102,9 @@ final class HomeController extends AbstractController
             'dailyLabels' => $dailyLabels,
             'dailyData' => $dailyData,
             'statusData' => $statusData,
+            'statsBySector' => $statsBySector,
+            'sectorLabels' => array_keys($statsBySector),
+            'sectorData' => array_values($statsBySector),
         ]);
     }
 }

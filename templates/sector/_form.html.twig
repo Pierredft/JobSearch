@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    <div class="grid gap-md">
+        {{ form_row(form.name) }}
+    </div>
+    
+    <div class="mt-lg flex justify-end">
+        <button class="btn btn-primary">{{ button_label|default('Sauvegarder') }}</button>
+    </div>
+{{ form_end(form) }}

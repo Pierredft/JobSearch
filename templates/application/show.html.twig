@@ -24,6 +24,15 @@
                 
                 <div style="display: grid; gap: 1rem;">
                     <div>
+                        <strong>Secteur :</strong> 
+                        {% if application.sector %}
+                            {{ application.sector.name }}
+                        {% else %}
+                            <span class="text-secondary">Non spécifié</span>
+                        {% endif %}
+                    </div>
+
+                    <div>
                         <strong>Entreprise :</strong> {{ application.company.name }}
                         {% if application.company.website %}
                             <br><a href="{{ application.company.website }}" target="_blank" class="text-primary">🔗 Site web</a>

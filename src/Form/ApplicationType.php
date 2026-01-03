@@ -7,6 +7,7 @@ namespace App\Form;
 use App\Entity\Application;
 use App\Entity\Company;
 use App\Entity\Platform;
+use App\Entity\Sector;
 use App\Enum\ApplicationStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -26,6 +27,17 @@ class ApplicationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('jobTitle', TextType::class, [
+                'label' => 'Titre du poste',
+                'attr' => ['class' => 'form-input', 'placeholder' => 'Ex: Développeur Full-Stack'],
+            ])
+            ->add('sector', EntityType::class, [
+                'class' => Sector::class,
+                'choice_label' => 'name',
+                'required' => false,
+                'placeholder' => 'Choisir un secteur',
+                'attr' => ['class' => 'form-select'],
+            ])
             ->add('company', EntityType::class, [
                 'class' => Company::class,
                 'choice_label' => 'name',
@@ -37,10 +49,6 @@ class ApplicationType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir une plateforme',
                 'attr' => ['class' => 'form-select'],
-            ])
-            ->add('jobTitle', TextType::class, [
-                'label' => 'Titre du poste',
-                'attr' => ['class' => 'form-input', 'placeholder' => 'Ex: Développeur Full-Stack'],
             ])
             ->add('jobDescription', TextareaType::class, [
                 'label' => 'Description du poste',

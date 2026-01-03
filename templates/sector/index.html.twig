@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des secteurs - Job Search ERP{% endblock %}
+
+{% block body %}
+<div class="fade-in">
+    <div class="flex-between mb-xl">
+        <h1 class="page-title mb-0">🏷️ Gestion des Secteurs</h1>
+        <a href="{{ path('app_sector_new') }}" class="btn btn-primary">
+            ➕ Nouveau secteur
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for sector in sectors %}
+                <tr>
+                    <td data-label="Id">{{ sector.id }}</td>
+                    <td data-label="Nom">{{ sector.name }}</td>
+                    <td data-label="Actions">
+                        <div class="flex gap-sm">
+                            <a href="{{ path('app_sector_show', {'id': sector.id}) }}" class="btn btn-sm btn-secondary">
+                                👁️
+                            </a>
+                            <a href="{{ path('app_sector_edit', {'id': sector.id}) }}" class="btn btn-sm btn-primary">
+                                ✏️
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3" class="text-center">Aucun secteur trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

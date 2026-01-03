@@ -11,6 +11,43 @@
         </a>
     </div>
 
+    <div class="card mb-xl">
+        <form method="get" class="filter-form">
+            <div class="flex-grow">
+                <label class="form-label" for="sector">Secteur</label>
+                <select name="sector" id="sector" class="form-select">
+                    <option value="">Tous les secteurs</option>
+                    {% for sector in sectors %}
+                        <option value="{{ sector.id }}" {{ currentSector == sector.id ? 'selected' : '' }}>
+                            {{ sector.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex-grow">
+                <label class="form-label" for="status">Statut</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    {% for status in statuses %}
+                        <option value="{{ status.value }}" {{ currentStatus == status.value ? 'selected' : '' }}>
+                            {{ status.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    🔍 Filtrer
+                </button>
+                {% if currentSector or currentStatus %}
+                    <a href="{{ path('app_application_index') }}" class="btn btn-secondary ml-sm">
+                        ❌ Reset
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
     {% if applications|length > 0 %}
     <div class="table-container">
         <table class="table">
@@ -18,6 +55,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Poste</th>
+                    <th>Secteur</th>
                     <th>Entreprise</th>
                     <th>Plateforme</th>
                     <th>Localisation</th>
@@ -33,6 +71,15 @@
                         <strong>{{ application.jobTitle }}</strong>
                         {% if application.salary %}
                             <br><small class="text-secondary">{{ application.salary }}</small>
+                        {% endif %}
+                    </td>
+                    <td data-label="Secteur">
+                        {% if application.sector %}
+                            <span class="badge" style="background: var(--surface-hover); color: var(--text-primary);">
+                                {{ application.sector.name }}
+                            </span>
+                        {% else %}
+                            <span class="text-secondary">-</span>
                         {% endif %}
                     </td>
                     <td data-label="Entreprise">{{ application.company.name }}</td>

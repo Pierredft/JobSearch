@@ -54,6 +54,11 @@
             <h3 class="chart-title">📊 Répartition par statut</h3>
             <canvas id="statusChart"></canvas>
         </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">🏷️ Répartition par secteur</h3>
+            <canvas id="sectorChart"></canvas>
+        </div>
     </div>
 
     <!-- Recent Applications -->
@@ -204,6 +209,43 @@ document.addEventListener('DOMContentLoaded', function() {
                         padding: 15,
                         font: {
                             size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Sector Chart
+    const sectorCtx = document.getElementById('sectorChart').getContext('2d');
+    new Chart(sectorCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ sectorLabels|json_encode|raw }},
+            datasets: [{
+                data: {{ sectorData|json_encode|raw }},
+                backgroundColor: [
+                    '#8B5CF6',
+                    '#EC4899',
+                    '#14B8A6',
+                    '#F97316',
+                    '#6366F1',
+                    '#F43F5E'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 11
                         }
                     }
                 }

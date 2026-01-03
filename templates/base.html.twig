@@ -41,6 +41,10 @@
                         <span class="nav-icon">🌐</span>
                         <span>Plateformes</span>
                     </a>
+                    <a href="{{ path('app_sector_index') }}" class="nav-item {% if app.request.attributes.get('_route') starts with 'app_sector' %}active{% endif %}">
+                        <span class="nav-icon">🏷️</span>
+                        <span>Secteurs</span>
+                    </a>
                 </nav>
             </aside>
 
